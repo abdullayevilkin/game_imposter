@@ -2,41 +2,59 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Imposter Oyunu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14142b">
+<title>İmposter Oyunu</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>">
 <style>
-:root {
---bg-color: #1e1e2f;
---text-color: #ffffff;
---primary-btn: #ff4757;
---primary-hover: #ff6b81;
---accent-color: #2ed573;
-}
+    :root {
+        --bg-color: #14142b;
+        --bg-glow-1: rgba(255, 71, 87, 0.25);
+        --bg-glow-2: rgba(46, 213, 115, 0.18);
+        --card-bg: rgba(42, 42, 64, 0.85);
+        --field-bg: #1b1b33;
+        --border: rgba(255, 255, 255, 0.08);
+        --text-color: #ffffff;
+        --muted: #a4a4c4;
+        --primary-btn: #ff4757;
+        --primary-hover: #ff6b81;
+        --accent-color: #2ed573;
+        --warning: #ffa502;
+    }
 
     * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: var(--bg-color);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        background:
+            radial-gradient(circle at 15% 10%, var(--bg-glow-1), transparent 45%),
+            radial-gradient(circle at 85% 90%, var(--bg-glow-2), transparent 45%),
+            var(--bg-color);
         color: var(--text-color);
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
         text-align: center;
     }
 
     .container {
-        width: 90%;
-        max-width: 400px;
-        background: #2a2a40;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        width: 100%;
+        max-width: 420px;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        padding: 28px 24px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     }
 
     .screen {
@@ -45,91 +63,243 @@
 
     .screen.active {
         display: block;
-        animation: fadeIn 0.3s ease-in-out;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .logo {
+        font-size: 48px;
+        margin-bottom: 6px;
     }
 
     h1, h2, h3 {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
+        line-height: 1.2;
+    }
+
+    .subtitle {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 24px;
+    }
+
+    .field {
+        text-align: left;
+        margin-bottom: 18px;
+    }
+
+    .label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
     }
 
     textarea {
         width: 100%;
-        height: 80px;
-        padding: 10px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        border: 1px solid #444;
-        background: #1e1e2f;
+        height: 90px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--field-bg);
         color: #fff;
+        font: inherit;
         font-size: 16px;
         resize: none;
+        transition: border-color 0.2s;
     }
 
-    select {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        border: 1px solid #444;
-        background: #1e1e2f;
-        color: #fff;
-        font-size: 16px;
+    textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+        min-height: 28px;
+    }
+
+    .chip {
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 13px;
+    }
+
+    .chip.count {
+        background: transparent;
+        color: var(--muted);
+    }
+
+    .stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--field-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 6px;
+    }
+
+    .stepper button {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        font-size: 22px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+    }
+
+    .stepper button:disabled {
+        opacity: 0.3;
+        cursor: default;
+    }
+
+    .stepper-value {
+        font-size: 18px;
+        font-weight: 700;
     }
 
     button {
         width: 100%;
-        padding: 15px;
+        padding: 16px;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         background-color: var(--primary-btn);
         color: white;
-        font-size: 18px;
-        font-weight: bold;
+        font: inherit;
+        font-size: 17px;
+        font-weight: 700;
         cursor: pointer;
-        transition: background 0.3s;
+        box-shadow: 0 6px 18px rgba(255, 71, 87, 0.35);
+        transition: background 0.2s, transform 0.1s;
     }
 
     button:hover {
         background-color: var(--primary-hover);
     }
 
+    button:active {
+        transform: scale(0.98);
+    }
+
+    button.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: none;
+        margin-top: 10px;
+    }
+
+    .progress {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 20px;
+    }
+
+    .progress span {
+        flex: 1;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .progress span.done {
+        background: var(--accent-color);
+    }
+
+    .muted {
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .player-name {
+        color: var(--warning);
+        font-size: 2rem;
+        margin: 8px 0 24px;
+        overflow-wrap: anywhere;
+    }
+
     #word-display {
-        font-size: 2.5rem;
-        font-weight: bold;
+        font-size: clamp(1.6rem, 8vw, 2.4rem);
+        font-weight: 800;
         color: var(--accent-color);
-        margin: 30px 0;
-        padding: 20px;
+        margin: 24px 0;
+        padding: 28px 16px;
         border: 2px dashed var(--accent-color);
-        border-radius: 10px;
+        border-radius: 16px;
+        background: rgba(46, 213, 115, 0.06);
+        overflow-wrap: anywhere;
     }
 
     .imposter-text {
         color: var(--primary-btn) !important;
         border-color: var(--primary-btn) !important;
+        background: rgba(255, 71, 87, 0.08) !important;
     }
 
     .warning {
-        color: #ffa502;
+        color: var(--warning);
         font-size: 14px;
         margin-bottom: 15px;
         display: none;
     }
 
     .profile-avatar {
-        font-size: 60px;
-        margin: 10px 0;
-        display: inline-block;
-        background: #1e1e2f;
+        font-size: 56px;
+        margin: 10px 0 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--field-bg);
+        border: 1px solid var(--border);
         border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        line-height: 100px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        width: 104px;
+        height: 104px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .starter {
+        margin: 20px 0;
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .starter strong {
+        color: var(--warning);
+    }
+
+    .reveal {
+        display: none;
+        text-align: left;
+        margin: 0 0 16px;
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        line-height: 1.6;
+    }
+
+    .reveal strong {
+        color: var(--accent-color);
+    }
+
+    .reveal .bad {
+        color: var(--primary-btn);
+        font-weight: 700;
     }
 
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .screen.active { animation: none; }
     }
 </style>
 </head>
@@ -138,16 +308,24 @@
 <div class="container">
     <!-- 1. Quraşdırma Ekranı -->
     <div id="setup-screen" class="screen active">
+        <div class="logo">🕵️</div>
         <h2>İmposter Oyunu</h2>
-        <p style="margin-bottom: 10px; font-size: 14px;">Oyunçuların adlarını vergüllə ayıraraq yazın (məs: Əli, Vəli, Aysel)</p>
-        <textarea id="player-names" placeholder="Əli, Vəli, Aysel, Orxan, Nigar"></textarea>
+        <p class="subtitle">Hamı gizli sözü görür, imposter isə yox. Onu tapın!</p>
 
-        <p style="margin-bottom: 10px; font-size: 14px;">İmposter sayını seçin:</p>
-        <select id="imposter-count">
-            <option value="1">1 İmposter</option>
-            <option value="2">2 İmposter</option>
-            <option value="3">3 İmposter</option>
-        </select>
+        <div class="field">
+            <label class="label" for="player-names">Oyunçular</label>
+            <textarea id="player-names" placeholder="Əli, Vəli, Aysel, Orxan, Nigar"></textarea>
+            <div id="player-chips" class="chips"></div>
+        </div>
+
+        <div class="field">
+            <span class="label">İmposter sayı</span>
+            <div class="stepper">
+                <button type="button" id="imp-minus" aria-label="Azalt" onclick="changeImposters(-1)">−</button>
+                <span class="stepper-value"><span id="imposter-count">1</span> İmposter</span>
+                <button type="button" id="imp-plus" aria-label="Artır" onclick="changeImposters(1)">+</button>
+            </div>
+        </div>
 
         <p id="error-msg" class="warning"></p>
         <button onclick="startGame()">Oyunu Başlat</button>
@@ -155,25 +333,31 @@
 
     <!-- 2. Telefonu Ötürmə Ekranı -->
     <div id="pass-screen" class="screen">
-        <h3>Telefonu ötürün:</h3>
+        <div id="pass-progress" class="progress"></div>
+        <p class="muted">Telefonu ötürün:</p>
         <div id="player-emoji" class="profile-avatar">👤</div>
-        <h1 id="pass-to-name" style="color: #ffa502;">-</h1>
+        <h1 id="pass-to-name" class="player-name">-</h1>
         <button onclick="showWordScreen()">Mən <span id="btn-player-name"></span>, sözə baxıram</button>
     </div>
 
     <!-- 3. Sözü Göstərmə Ekranı -->
     <div id="view-screen" class="screen">
-        <h3>Gizli söz:</h3>
+        <div id="view-progress" class="progress"></div>
+        <p class="muted">Gizli söz:</p>
         <div id="word-display">SÖZ</div>
-        <p style="margin-bottom: 20px; font-size: 14px;">Heç kimə göstərmə!</p>
+        <p class="muted" style="margin-bottom: 20px;">🤫 Heç kimə göstərmə!</p>
         <button onclick="nextPlayer()">Anladım, Növbəti</button>
     </div>
 
     <!-- 4. Oyunun Başlama Ekranı -->
     <div id="end-screen" class="screen">
+        <div class="logo">🗣️</div>
         <h2 style="color: var(--accent-color);">Bütün rollar paylandı!</h2>
-        <p style="margin: 20px 0;">Telefonu ortaya qoyun və müzakirəyə başlayın. İmposteri tapmağa çalışın!</p>
-        <button onclick="resetGame()">Yenidən Başla</button>
+        <p class="muted">Telefonu ortaya qoyun və müzakirəyə başlayın. İmposteri tapmağa çalışın!</p>
+        <div class="starter">İlk sual verən: <strong id="starter-name">-</strong></div>
+        <div id="reveal-box" class="reveal"></div>
+        <button id="reveal-btn" class="secondary" onclick="revealResult()">Nəticəni göstər</button>
+        <button onclick="resetGame()" style="margin-top: 10px;">Yenidən Başla</button>
     </div>
 </div>
 
@@ -202,6 +386,7 @@
 ];
 
     const emojiBank = ["🦊","🐼","🦁","🐯","🐸","🐵","🐧","🦉","🦄","🦖","🐙","🐢","👽","🤖","👻","🤡"];
+    const MAX_IMPOSTERS = 3;
 
     let players = [];
     let playerProfiles = {}; // Adlara görə emojiləri yadda saxlamaq üçün
@@ -210,15 +395,45 @@
     let currentWord = "";
     let currentPlayerIndex = 0;
 
-    function startGame() {
-        const namesInput = document.getElementById("player-names").value;
-        const errorMsg = document.getElementById("error-msg");
-
-        players = namesInput.split(",")
+    function parseNames() {
+        const names = document.getElementById("player-names").value
+                            .split(",")
                             .map(name => name.trim())
                             .filter(name => name !== "");
+        // Eyni ad iki dəfə yazılıbsa bir dəfə saxlayırıq
+        return [...new Set(names)];
+    }
 
-        imposterCount = parseInt(document.getElementById("imposter-count").value);
+    function updateSetupUI() {
+        const names = parseNames();
+        const chips = document.getElementById("player-chips");
+        chips.innerHTML = "";
+        names.forEach(name => {
+            const chip = document.createElement("span");
+            chip.className = "chip";
+            chip.textContent = (playerProfiles[name] ? playerProfiles[name] + " " : "") + name;
+            chips.appendChild(chip);
+        });
+        if (names.length > 0) {
+            const count = document.createElement("span");
+            count.className = "chip count";
+            count.textContent = names.length + " oyunçu";
+            chips.appendChild(count);
+        }
+
+        document.getElementById("imposter-count").innerText = imposterCount;
+        document.getElementById("imp-minus").disabled = imposterCount <= 1;
+        document.getElementById("imp-plus").disabled = imposterCount >= MAX_IMPOSTERS;
+    }
+
+    function changeImposters(delta) {
+        imposterCount = Math.min(MAX_IMPOSTERS, Math.max(1, imposterCount + delta));
+        updateSetupUI();
+    }
+
+    function startGame() {
+        const errorMsg = document.getElementById("error-msg");
+        players = parseNames();
 
         if (players.length < 3) {
             errorMsg.innerText = "Oyunu oynamaq üçün ən azı 3 oyunçu lazımdır!";
@@ -234,12 +449,13 @@
 
         errorMsg.style.display = "none";
 
-        // Oyunçulara davamlı profil emojisi təyin edirik
+        // Oyunçulara davamlı profil emojisi təyin edirik, mümkün qədər təkrarsız
         players.forEach(player => {
             if (!playerProfiles[player]) {
-                // Əgər bu adın profili yoxdursa, təsadüfi emoji ver və yadda saxla
-                let randomEmoji = emojiBank[Math.floor(Math.random() * emojiBank.length)];
-                playerProfiles[player] = randomEmoji;
+                const used = new Set(players.map(p => playerProfiles[p]).filter(Boolean));
+                const free = emojiBank.filter(e => !used.has(e));
+                const pool = free.length > 0 ? free : emojiBank;
+                playerProfiles[player] = pool[Math.floor(Math.random() * pool.length)];
             }
         });
 
@@ -259,11 +475,22 @@
         renderPassScreen();
     }
 
+    function renderProgress(id) {
+        const bar = document.getElementById(id);
+        bar.innerHTML = "";
+        players.forEach((_, i) => {
+            const step = document.createElement("span");
+            if (i <= currentPlayerIndex) step.className = "done";
+            bar.appendChild(step);
+        });
+    }
+
     function renderPassScreen() {
         switchScreen("pass-screen");
         const currentPlayer = players[currentPlayerIndex];
 
         // UI elementlərini yeniləyirik
+        renderProgress("pass-progress");
         document.getElementById("pass-to-name").innerText = currentPlayer;
         document.getElementById("btn-player-name").innerText = currentPlayer;
         document.getElementById("player-emoji").innerText = playerProfiles[currentPlayer];
@@ -271,6 +498,7 @@
 
     function showWordScreen() {
         switchScreen("view-screen");
+        renderProgress("view-progress");
         const wordDisplay = document.getElementById("word-display");
 
         if (roles[currentPlayerIndex] === "imposter") {
@@ -287,15 +515,45 @@
         if (currentPlayerIndex < players.length) {
             renderPassScreen();
         } else {
-            switchScreen("end-screen");
+            showEndScreen();
         }
     }
 
+    function showEndScreen() {
+        const starter = players[Math.floor(Math.random() * players.length)];
+        document.getElementById("starter-name").innerText = playerProfiles[starter] + " " + starter;
+        document.getElementById("reveal-box").style.display = "none";
+        document.getElementById("reveal-btn").style.display = "block";
+        switchScreen("end-screen");
+    }
+
+    function revealResult() {
+        const imposters = players.filter((_, i) => roles[i] === "imposter");
+        const box = document.getElementById("reveal-box");
+        box.innerHTML = "";
+
+        const word = document.createElement("div");
+        word.append("Söz: ");
+        const strong = document.createElement("strong");
+        strong.textContent = currentWord;
+        word.appendChild(strong);
+
+        const who = document.createElement("div");
+        who.append(imposters.length > 1 ? "İmposterlər: " : "İmposter: ");
+        const bad = document.createElement("span");
+        bad.className = "bad";
+        bad.textContent = imposters.map(p => playerProfiles[p] + " " + p).join(", ");
+        who.appendChild(bad);
+
+        box.append(word, who);
+        box.style.display = "block";
+        document.getElementById("reveal-btn").style.display = "none";
+    }
+
     function resetGame() {
-        // ƏVVƏLKİ KODDA OLUB, İNDİ SİLİNƏN HİSSƏ:
-        // document.getElementById("player-names").value = "";
-        // Bu sayədə adlar inputda qalır, ancaq oyun yenidən başlayır.
+        // Adlar inputda qalır, ancaq oyun yenidən başlayır.
         switchScreen("setup-screen");
+        updateSetupUI();
     }
 
     function switchScreen(screenId) {
@@ -303,7 +561,11 @@
             screen.classList.remove("active");
         });
         document.getElementById(screenId).classList.add("active");
+        window.scrollTo(0, 0);
     }
+
+    document.getElementById("player-names").addEventListener("input", updateSetupUI);
+    updateSetupUI();
 </script>
 
 </body>
