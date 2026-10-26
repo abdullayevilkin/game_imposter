@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imposter Oyunu</title>
+<style>
+:root {
+--bg-color: #1e1e2f;
+--text-color: #ffffff;
+--primary-btn: #ff4757;
+--primary-hover: #ff6b81;
+--accent-color: #2ed573;
+}
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 400px;
+        background: #2a2a40;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .screen {
+        display: none;
+    }
+
+    .screen.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    h1, h2, h3 {
+        margin-bottom: 20px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        background: #1e1e2f;
+        color: #fff;
+        font-size: 16px;
+        resize: none;
+    }
+
+    select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        background: #1e1e2f;
+        color: #fff;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 8px;
+        background-color: var(--primary-btn);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    button:hover {
+        background-color: var(--primary-hover);
+    }
+
+    #word-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--accent-color);
+        margin: 30px 0;
+        padding: 20px;
+        border: 2px dashed var(--accent-color);
+        border-radius: 10px;
+    }
+
+    .imposter-text {
+        color: var(--primary-btn) !important;
+        border-color: var(--primary-btn) !important;
+    }
+
+    .warning {
+        color: #ffa502;
+        font-size: 14px;
+        margin-bottom: 15px;
+        display: none;
+    }
+
+    .profile-avatar {
+        font-size: 60px;
+        margin: 10px 0;
+        display: inline-block;
+        background: #1e1e2f;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 1. Quraşdırma Ekranı -->
+    <div id="setup-screen" class="screen active">
+        <h2>İmposter Oyunu</h2>
+        <p style="margin-bottom: 10px; font-size: 14px;">Oyunçuların adlarını vergüllə ayıraraq yazın (məs: Əli, Vəli, Aysel)</p>
+        <textarea id="player-names" placeholder="Əli, Vəli, Aysel, Orxan, Nigar"></textarea>
+
+        <p style="margin-bottom: 10px; font-size: 14px;">İmposter sayını seçin:</p>
+        <select id="imposter-count">
+            <option value="1">1 İmposter</option>
+            <option value="2">2 İmposter</option>
+            <option value="3">3 İmposter</option>
+        </select>
+
+        <p id="error-msg" class="warning"></p>
+        <button onclick="startGame()">Oyunu Başlat</button>
+    </div>
+
+    <!-- 2. Telefonu Ötürmə Ekranı -->
+    <div id="pass-screen" class="screen">
+        <h3>Telefonu ötürün:</h3>
+        <div id="player-emoji" class="profile-avatar">👤</div>
+        <h1 id="pass-to-name" style="color: #ffa502;">-</h1>
+        <button onclick="showWordScreen()">Mən <span id="btn-player-name"></span>, sözə baxıram</button>
+    </div>
+
+    <!-- 3. Sözü Göstərmə Ekranı -->
+    <div id="view-screen" class="screen">
+        <h3>Gizli söz:</h3>
+        <div id="word-display">SÖZ</div>
+        <p style="margin-bottom: 20px; font-size: 14px;">Heç kimə göstərmə!</p>
+        <button onclick="nextPlayer()">Anladım, Növbəti</button>
+    </div>
+
+    <!-- 4. Oyunun Başlama Ekranı -->
+    <div id="end-screen" class="screen">
+        <h2 style="color: var(--accent-color);">Bütün rollar paylandı!</h2>
+        <p style="margin: 20px 0;">Telefonu ortaya qoyun və müzakirəyə başlayın. İmposteri tapmağa çalışın!</p>
+        <button onclick="resetGame()">Yenidən Başla</button>
+    </div>
+</div>
+
+<script>
+    const wordsList = [
+"Xəstəxana", "Məktəb", "Kinozal", "Zoopark", "Supermarket", "Təyyarə", "Stadion", "Restoran", "Bank", "Muzey",
+"Kitabxana", "Həbsxana", "Sirk", "Teatr", "Çimərlik", "Liman", "Bərbərxana", "Universitet", "Zavod", "Səfirlik",
+"Bələdiyyə", "Park", "Meşə", "Kilsə", "Məscid", "Gəmi", "Qaraj", "Aptek", "Çörəkxana", "Qala",
+"Saray", "Düşərgə", "Qəbiristanlıq", "Laboratoriya", "Kazino", "Otel", "Motel", "Çadır", "Qayıq", "Karavan",
+"Tramvay", "Metro", "Avtobus", "Dayanacaq", "Qəhvəxana", "Çayxana", "Kafe", "Ferma", "Kənd", "Bazar",
+"Vokzal", "Qəsəbə", "Şəhər", "Ada", "Dağ", "Səhra", "Şəlalə", "Mağara", "Şaxta", "Cəngəllik",
+"Rəsədxana", "Planetari", "Məhkəmə", "Vəkilxana", "Qəssabxana", "Şirniyyatxana", "Qənnadı", "Meydan", "Xiyaban", "Bulvar",
+"İdmanxana", "Hovuz", "Hamam", "Sauna", "Bağça", "Kömürxana", "Dəyirman", "Qüllə", "Mayak", "Körpü",
+"Tunel", "Keçid", "Zirzəmi", "Çardaq", "Daxma", "Bina", "Göydələn", "Mənzil", "Ofis", "Studiya",
+"Emalatxana", "Fabrik", "Kombinat", "Anbar", "Mağaza", "Butik", "Kiosk", "Dükan", "Bufet", "Aşxana",
+"Poliklinika", "Ambulatoriya", "Sanatoriya", "Kurort", "Cəbhə", "Səngər", "Baza", "Kazarma", "Zindan", "Mətbəx",
+"Yataqxana", "Qonaqotağı", "Dəhliz", "Axır", "Tövlə", "Həyət", "Bağ", "Bostan", "Tarla", "Orman",
+"Qoruq", "Vahə", "Bataqlıq", "Göl", "Çay", "Dəniz", "Okean", "Körfəz", "Boğaz", "Arx",
+"Bənd", "Sədd", "İstehkam", "Məzarlıq", "Türbə", "Abidə", "Heykəl", "Qalereya", "Sərgi", "Səhnə",
+"Arena", "Qumarxana", "Çapxana", "Mətbəə", "Nəşriyyat", "Redaksiya", "Poçt", "Teleqraf", "Qovşaq", "Stansiya",
+"Terminal", "Depo", "Anqar", "Tərsanə", "Gömrük", "Sərhəd", "Şlaqbaum", "Karusel", "Attraksion", "Sığınacaq",
+"Bunker", "Xəndək", "Uçurum", "Zirvə", "Təpə", "Dərə", "Kanyon", "Məbəd", "Ziyarətgah", "Monastır",
+"Sinaqoq", "Pir", "Yarmarka", "Hərrac", "Birja", "Xəzinə", "Seyf", "Sandıq", "Şkaf", "Dolab",
+"Vitrin", "Rəf", "Arxiv", "Sənədxana", "Kartoteka", "Qeydiyyat", "Şöbə", "İdarə", "Nazirlik", "Komitə",
+"Agentlik", "Şirkət", "Firma", "Sex", "Konveyer", "Mədən", "Karyer", "Buruq", "Qazma", "Estakada"
+];
+
+    const emojiBank = ["🦊","🐼","🦁","🐯","🐸","🐵","🐧","🦉","🦄","🦖","🐙","🐢","👽","🤖","👻","🤡"];
+
+    let players = [];
+    let playerProfiles = {}; // Adlara görə emojiləri yadda saxlamaq üçün
+    let imposterCount = 1;
+    let roles = [];
+    let currentWord = "";
+    let currentPlayerIndex = 0;
+
+    function startGame() {
+        const namesInput = document.getElementById("player-names").value;
+        const errorMsg = document.getElementById("error-msg");
+
+        players = namesInput.split(",")
+                            .map(name => name.trim())
+                            .filter(name => name !== "");
+
+        imposterCount = parseInt(document.getElementById("imposter-count").value);
+
+        if (players.length < 3) {
+            errorMsg.innerText = "Oyunu oynamaq üçün ən azı 3 oyunçu lazımdır!";
+            errorMsg.style.display = "block";
+            return;
+        }
+
+        if (imposterCount >= players.length) {
+            errorMsg.innerText = "İmposter sayı oyunçu sayından az olmalıdır!";
+            errorMsg.style.display = "block";
+            return;
+        }
+
+        errorMsg.style.display = "none";
+
+        // Oyunçulara davamlı profil emojisi təyin edirik
+        players.forEach(player => {
+            if (!playerProfiles[player]) {
+                // Əgər bu adın profili yoxdursa, təsadüfi emoji ver və yadda saxla
+                let randomEmoji = emojiBank[Math.floor(Math.random() * emojiBank.length)];
+                playerProfiles[player] = randomEmoji;
+            }
+        });
+
+        currentWord = wordsList[Math.floor(Math.random() * wordsList.length)];
+        roles = Array(players.length).fill("citizen");
+
+        let assignedImposters = 0;
+        while (assignedImposters < imposterCount) {
+            let randomIndex = Math.floor(Math.random() * players.length);
+            if (roles[randomIndex] !== "imposter") {
+                roles[randomIndex] = "imposter";
+                assignedImposters++;
+            }
+        }
+
+        currentPlayerIndex = 0;
+        renderPassScreen();
+    }
+
+    function renderPassScreen() {
+        switchScreen("pass-screen");
+        const currentPlayer = players[currentPlayerIndex];
+
+        // UI elementlərini yeniləyirik
+        document.getElementById("pass-to-name").innerText = currentPlayer;
+        document.getElementById("btn-player-name").innerText = currentPlayer;
+        document.getElementById("player-emoji").innerText = playerProfiles[currentPlayer];
+    }
+
+    function showWordScreen() {
+        switchScreen("view-screen");
+        const wordDisplay = document.getElementById("word-display");
+
+        if (roles[currentPlayerIndex] === "imposter") {
+            wordDisplay.innerText = "İMPOSTER";
+            wordDisplay.classList.add("imposter-text");
+        } else {
+            wordDisplay.innerText = currentWord;
+            wordDisplay.classList.remove("imposter-text");
+        }
+    }
+
+    function nextPlayer() {
+        currentPlayerIndex++;
+        if (currentPlayerIndex < players.length) {
+            renderPassScreen();
+        } else {
+            switchScreen("end-screen");
+        }
+    }
+
+    function resetGame() {
+        // ƏVVƏLKİ KODDA OLUB, İNDİ SİLİNƏN HİSSƏ:
+        // document.getElementById("player-names").value = "";
+        // Bu sayədə adlar inputda qalır, ancaq oyun yenidən başlayır.
+        switchScreen("setup-screen");
+    }
+
+    function switchScreen(screenId) {
+        document.querySelectorAll(".screen").forEach(screen => {
+            screen.classList.remove("active");
+        });
+        document.getElementById(screenId).classList.add("active");
+    }
+</script>
+
+</body>
+</html>
