@@ -2,4 +2,6 @@
 
 Bir telefonda oynanan söz oyunu. Hər oyunçu növbə ilə gizli sözə baxır, imposter(lər) isə sözü görmür. Sonra müzakirə edib imposteri tapmağa çalışırsınız.
 
+🎮 **Oyna:** https://abdullayevilkin.github.io/game_imposter/
+
 Heç bir quraşdırma lazım deyil: `index.html` faylını brauzerdə açmaq kifayətdir.
